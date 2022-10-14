@@ -84,6 +84,14 @@ impl Ppu {
         }
     }
 
+    pub fn mirroring(&mut self, m: Mirroring) {
+        self.mirroring = m;
+    }
+
+    pub fn get_scanline(&self) -> usize {
+        self.scanline
+    }
+
     fn vram_read_mirrored(&self, addr: u16) -> u8 {
         self.vram[(self.mirror_address(addr) - 0x2000) as usize]
     }
@@ -560,6 +568,7 @@ impl Ppu {
             if self.line_progress >= sprite_x as usize
                 && self.line_progress < sprite_x as usize + 8
                 && sprite_y != 0xff
+                && self.scanline >= sprite_y as usize
             {
                 sprite_zero_hit |= self.draw_sprite_pixel(
                     cpu,
