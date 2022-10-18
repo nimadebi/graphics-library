@@ -173,7 +173,10 @@ impl Ppu {
                 self.scroll_addr_latch = !self.scroll_addr_latch;
             }
             PpuRegister::Address => {
-                if self.scroll_addr_latch {
+                if !self.scroll_addr_latch {
+                    //first write
+                } else {
+                    //second write
                     self.addr_new_nametable = match value & 0b1100 {
                         0b0000 => 0x2000,
                         0b0100 => 0x2400,
