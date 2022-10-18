@@ -84,10 +84,12 @@ impl Ppu {
         }
     }
 
+    /// Change the mirroring mode of the PPU
     pub fn mirroring(&mut self, m: Mirroring) {
         self.mirroring = m;
     }
 
+    /// Get the scanline that the PPU is currently drawing
     pub fn get_scanline(&self) -> usize {
         self.scanline
     }
