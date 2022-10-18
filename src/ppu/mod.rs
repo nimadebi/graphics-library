@@ -180,7 +180,8 @@ impl Ppu {
                         0b1000 => 0x2800,
                         0b1100 => 0x2c00,
                         _ => unreachable!(),
-                    }
+                    };
+                    self.controller_register.nametable_address = self.addr_new_nametable;
                 }
                 self.addr.write(value, self.scroll_addr_latch);
                 self.scroll_addr_latch = !self.scroll_addr_latch;
