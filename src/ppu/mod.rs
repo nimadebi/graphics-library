@@ -175,6 +175,12 @@ impl Ppu {
             PpuRegister::Address => {
                 if !self.scroll_addr_latch {
                     //first write
+                    self.scroll_access.y &= !0b111;
+                    self.scroll_access.y |= (value >> 4) & 0b11;
+
+                    self.scroll_access.y &= !0b1100_0000;
+                    self.scroll_access.y |= (value & 0b11) << 6;
+
                     self.addr_new_nametable = match value & 0b1100 {
                         0b0000 => 0x2000,
                         0b0100 => 0x2400,
@@ -184,6 +190,14 @@ impl Ppu {
                     };
                 } else {
                     //second write
+                    self.scroll_access.y &= !0b0011_1000;
+                    self.scroll_access.y |= (value >> 2) & 0b0011_1000;
+
+                    self.scroll_access.x &= !0b1111_1000;
+                    self.scroll_access.x |= (value & 0b1_1111) << 3;
+
+                    self.scroll.x = self.scroll_access.x;
+                    self.scroll.y = self.scroll_access.y;
                     self.controller_register.nametable_address = self.addr_new_nametable;
                 }
                 self.addr.write(value, self.scroll_addr_latch);
