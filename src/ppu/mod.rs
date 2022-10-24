@@ -181,6 +181,9 @@ impl Ppu {
                     self.scroll_access.y &= !0b1100_0000;
                     self.scroll_access.y |= (value & 0b11) << 6;
 
+                    self.scroll.x = self.scroll_access.x;
+                    self.scroll.y = self.scroll_access.y;
+                    self.controller_register.nametable_address = self.addr_new_nametable;
                 } else {
                     //second write
                     self.scroll_access.y &= !0b0011_1000;
@@ -196,10 +199,6 @@ impl Ppu {
                         0b1100 => 0x2c00,
                         _ => unreachable!(),
                     };
-
-                    self.scroll.x = self.scroll_access.x;
-                    self.scroll.y = self.scroll_access.y;
-                    self.controller_register.nametable_address = self.addr_new_nametable;
                 }
                 self.addr.write(value, self.scroll_addr_latch);
                 self.scroll_addr_latch = !self.scroll_addr_latch;
