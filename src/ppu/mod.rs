@@ -145,7 +145,9 @@ impl Ppu {
 
     /// Write to a register of the PPU. This is supposed to be called from the CPU when a write occurs
     /// to one of the addresses as defined in the spec (and also mentioned in the docs of [`PpuRegister`])
-    pub fn write_ppu_register(&mut self, register: PpuRegister, value: u8) {
+    ///
+    /// We ask for a reference to the cpu here, since we sometimes need to write to the cartridge.
+    pub fn write_ppu_register(&mut self, register: PpuRegister, value: u8, cpu: &mut impl Cpu) {
         self.bus = value;
 
         match register {
@@ -205,7 +207,7 @@ impl Ppu {
             }
             PpuRegister::Data => {
                 match self.addr.addr {
-                    a @ 0..=0x1fff => log::debug!("write to read-only part of memory (chr rom) through ppu data register: 0x{a:0x}"),
+                    a @ 0..=0x1fff => cpu.ppu_memory_write(a, value),
                     a @ 0x2000..=0x2fff => {
                         self.vram[self.mirror_address(a) as usize - 0x2000] = value;
                     }
@@ -512,7 +514,7 @@ impl Ppu {
         let flip_y = sprite[2] & 0b1000_0000 > 0;
         let flip_x = sprite[2] & 0b0100_0000 > 0;
         if flip_y {
-            sprite_y_off = (u16::from(self.controller_register.sprite_size.1) - 1) - sprite_y_off;
+            sprite_y_off = (u16::from(self.controller_register.sprite_size.1) - 1).wrapping_sub(sprite_y_off);
         }
         if !flip_x {
             sprite_x_off = 7 - sprite_x_off;
@@ -534,8 +536,8 @@ impl Ppu {
 
         let palette = self.get_sprite_palette(sprite[2] & 0b0000_0011);
 
-        let byte_upper = cpu.ppu_read_chr_rom(bank + (tile_num * 16 + sprite_y_off) as u16);
-        let byte_lower = cpu.ppu_read_chr_rom(bank + (tile_num * 16 + sprite_y_off + 8) as u16);
+        let byte_upper = cpu.ppu_read_chr_rom(bank + (tile_num * 16).wrapping_add(sprite_y_off) as u16);
+        let byte_lower = cpu.ppu_read_chr_rom(bank + ((tile_num * 16).wrapping_add(sprite_y_off) + 8) as u16);
 
         let bit_upper = (byte_upper & 1 << sprite_x_off) != 0;
         let bit_lower = (byte_lower & 1 << sprite_x_off) != 0;
