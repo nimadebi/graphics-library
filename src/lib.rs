@@ -7,7 +7,7 @@ pub const HEIGHT: u32 = 240;
 /// That's also what's emulated in the rest of the ppu.
 pub const CPU_FREQ: f64 = 1.789_773 * 1_000_000.0; //hz
 
-mod cpu;
+pub mod cpu;
 mod ppu;
 mod run;
 mod screen;
