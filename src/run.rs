@@ -34,27 +34,43 @@ fn run_ppu(
                     match msg {
                         Message::Button(name, pressed) => match name {
                             ButtonName::A => {
+                                controller |= if pressed { 0x80} else { 0x00 };
+                                cpu.update_controller(controller);
                                 ppu.buttons.a = pressed;
                             }
                             ButtonName::B => {
+                                controller|= if pressed { 0x40 } else { 0x00 };
+                                cpu.update_controller(controller);
                                 ppu.buttons.b = pressed;
                             }
                             ButtonName::Up => {
+                                controller |= if pressed {0x08} else { 0x00 };
+                                cpu.update_controller(controller);
                                 ppu.buttons.up = pressed;
                             }
                             ButtonName::Down => {
+                                controller|= if pressed {0x04} else { 0x00 };
+                                cpu.update_controller(controller);
                                 ppu.buttons.down = pressed;
                             }
                             ButtonName::Left => {
+                                controller|= if pressed { 0x02 } else { 0x00 };
+                                cpu.update_controller(controller);
                                 ppu.buttons.left = pressed;
                             }
                             ButtonName::Right => {
+                                controller |= if pressed { 0x01 } else { 0x00 };
+                                cpu.update_controller(controller);
                                 ppu.buttons.right = pressed;
                             }
                             ButtonName::Start => {
+                                controller |= if pressed { 0x10 } else { 0x00 };
+                                cpu.update_controller(controller);
                                 ppu.buttons.start = pressed;
                             }
                             ButtonName::Select => {
+                                controller |= if pressed { 0x20 } else { 0x00 };
+                                cpu.update_controller(controller);
                                 ppu.buttons.select = pressed;
                             }
                         },

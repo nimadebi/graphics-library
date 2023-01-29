@@ -23,4 +23,7 @@ pub trait Cpu {
     /// Sometimes the PPU needs to give a non-maskable interrupt to the cpu. If it does, this method
     /// is called by the PPU.
     fn non_maskable_interrupt(&mut self);
+
+    ///Update the controller with data from ppu
+    fn update_controller(&mut self, controller: u8);
 }
