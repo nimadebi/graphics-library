@@ -209,7 +209,7 @@ impl Ppu {
     ///
     /// # Panics
     /// Can panic when address in data register is out of bounds
-    pub fn read_ppu_register(&mut self, register: PpuRegister, bus: &impl Bus) -> u8 {
+    pub fn read_ppu_register(&mut self, register: PpuRegister, cpu: &impl Cpu) -> u8 {
         match register {
             PpuRegister::Controller => {}
             PpuRegister::Mask => {}
@@ -227,7 +227,7 @@ impl Ppu {
                 self.bus = match self.addr.addr {
                     a @ 0..=0x1fff => {
                         let result = self.data_buffer;
-                        self.data_buffer = bus.read_ppu(a).unwrap();
+                        self.data_buffer = cpu.ppu_read_chr_rom(a);
                         result
                     }
                     a @ 0x2000..=0x2fff => {
