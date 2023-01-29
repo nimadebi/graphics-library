@@ -19,9 +19,9 @@ pub enum PpuRegister {
     Data = 7,
 }
 
-pub(crate) struct ControllerRegister {
+pub struct ControllerRegister {
     pub(crate) nametable_address: u16,
-    pub(crate) vram_increment: u16,
+    pub vram_increment: u16,
     pub(crate) sprite_pattern_address: u16,
     pub(crate) background_pattern_address: u16,
     pub(crate) sprite_size: (u8, u8),
@@ -153,8 +153,8 @@ impl StatusRegister {
 }
 
 #[derive(Default)]
-pub(crate) struct AddrRegister {
-    pub(crate) addr: u16,
+pub struct AddrRegister {
+    pub addr: u16,
 }
 
 impl AddrRegister {
