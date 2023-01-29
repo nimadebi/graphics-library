@@ -124,7 +124,7 @@ impl MaskRegister {
 }
 
 #[derive(Default, Debug)]
-pub(crate) struct StatusRegister {
+pub struct StatusRegister {
     pub(crate) sprite_overflow: bool,
     pub(crate) sprite_zero_hit: bool,
     pub(crate) vblank_started: bool,
