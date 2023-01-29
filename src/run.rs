@@ -30,7 +30,9 @@ fn run_ppu(
                 ..
             } = writer
             {
+                let mut controller;
                 while let Ok(msg) = buttons_rx.try_recv() {
+                    controller=0x00;
                     match msg {
                         Message::Button(name, pressed) => match name {
                             ButtonName::A => {
