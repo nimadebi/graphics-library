@@ -23,33 +23,33 @@ pub struct Ppu {
     /// Note that the screen is only 256 pixels wide. So There's a small h-blank period.
     line_progress: usize,
 
-    controller_register: ControllerRegister,
+    pub controller_register: ControllerRegister,
     mask_register: MaskRegister,
-    status_register: StatusRegister,
-    addr: AddrRegister,
+    pub status_register: StatusRegister,
+    pub addr: AddrRegister,
     addr_new_nametable: u16,
     scroll: ScrollRegister,
     scroll_access: ScrollRegister,
 
     oam_addr: OamAddrRegister,
 
-    scroll_addr_latch: bool,
+    pub scroll_addr_latch: bool,
 
-    palette_table: [u8; 32],
+    pub palette_table: [u8; 32],
     /// In normal operation, only the first 2048 bytes are used. That is because the
     /// original PPU had only 2048 bytes of vram and addresses in the higher 2048 bytes would
     /// be a mirror of parts in the lower 2048 bytes. However, if 4-screen [`Mirroring`] is selected
     /// then the upper 2048 bytes are actually used (on real hardware that meant that the cartridge
     /// itself came with more vram)
-    vram: [u8; 4096],
+    pub vram: [u8; 4096],
 
     oam: [u8; 256],
     secondary_oam: [u8; 32],
 
-    bus: u8,
+    pub bus: u8,
     // when reading from the ppu, everything is always lagging behind.
     // new reads go into the data buffer, and when you read you read the old buffer
-    data_buffer: u8,
+    pub data_buffer: u8,
 
     mirroring: Mirroring,
 
@@ -89,7 +89,7 @@ impl Ppu {
         self.vram[(self.mirror_address(addr) - 0x2000) as usize]
     }
 
-    fn mirror_address(&self, addr: u16) -> u16 {
+    pub fn mirror_address(&self, addr: u16) -> u16 {
         let addr = if addr > 0x2fff {
             addr - 0x1000
         } else if addr < 0x2000 {
@@ -209,7 +209,7 @@ impl Ppu {
     ///
     /// # Panics
     /// Can panic when address in data register is out of bounds
-    pub fn read_ppu_register(&mut self, register: PpuRegister, cpu: &impl Cpu) -> u8 {
+    pub fn read_ppu_register(&mut self, register: PpuRegister, bus: &impl Bus) -> u8 {
         match register {
             PpuRegister::Controller => {}
             PpuRegister::Mask => {}
@@ -227,7 +227,7 @@ impl Ppu {
                 self.bus = match self.addr.addr {
                     a @ 0..=0x1fff => {
                         let result = self.data_buffer;
-                        self.data_buffer = cpu.ppu_read_chr_rom(a);
+                        self.data_buffer = bus.read_ppu(a).unwrap();
                         result
                     }
                     a @ 0x2000..=0x2fff => {
